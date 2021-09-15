@@ -14,7 +14,7 @@ print("Columnar substitution cipher (decryption) for block size 4 -> ", encrypt0
 # Providing custom shift value:
 # It is recommended that you not choose a block size > len(plain_text)
 
-encrypt0r = Encrypt0r("Columnar_Transposition_Cipher:6")
-column_cipher = encrypt0r.encrypt("My name is The0rist")
+encrypt0r = Encrypt0r("Columnar_Transposition_Cipher")
+column_cipher = encrypt0r.encrypt("My name is The0rist", key=6)
 print("Columnar substitution cipher (encryption) for block size 6 -> ", column_cipher)
-print("Columnar substitution cipher (decryption) for block size 6 -> ", encrypt0r.decrypt(column_cipher))
+print("Columnar substitution cipher (decryption) for block size 6 -> ", encrypt0r.decrypt(column_cipher, key=6))

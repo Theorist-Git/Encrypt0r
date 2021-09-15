@@ -16,8 +16,8 @@ print("Substitution Reverse Cipher Decryption ->", dec_subst_cipher)
 # Providing custom shift value:
 # !!Remember that a shift of 26 will just return the string itself.!!
 
-encrypt0r = Encrypt0r("Substitution_Cipher:23")
-subst_cipher = encrypt0r.encrypt("Secret")
+encrypt0r = Encrypt0r("Substitution_Cipher")
+subst_cipher = encrypt0r.encrypt("Secret", key=12)
 print("Substitution Cipher Encryption (Custom Shift) ->", subst_cipher)
-dec_subst_cipher = encrypt0r.decrypt(subst_cipher)
+dec_subst_cipher = encrypt0r.decrypt(subst_cipher, key=12)
 print("Substitution Reverse Cipher Decryption (Custom Shift) ->", dec_subst_cipher)

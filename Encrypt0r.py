@@ -29,10 +29,11 @@ class Encrypt0r:
         self.supportedEncrypt0rs = [
             "reverse_cipher",
             "substitution_cipher",
-            "columnar_transposition_cipher"
+            "columnar_transposition_cipher",
+            "XOR_cipher"
         ]
 
-    def encrypt(self, plain_text):
+    def encrypt(self, plain_text, key=None):
         if self.cipher.lower() == "reverse_cipher":
             cipher_text = plain_text[::-1]
             return cipher_text
@@ -42,9 +43,9 @@ class Encrypt0r:
             # General substitution cipher, caesar's (shift value = 3) and ROT13(shift value = 13)
             # ciphers are special cases of this.
 
-            try:
-                n = int(self.cipher.split(":")[1])
-            except IndexError:
+            if key:
+                n = key
+            else:
                 import warnings
                 warnings.warn("You did not provide a shift value! Defaults to 13.")
                 n = 13
@@ -72,9 +73,9 @@ class Encrypt0r:
 
         elif "columnar_transposition_cipher" in self.cipher.lower():
             cipher_text = ""
-            try:
-                n = int(self.cipher.split(":")[1])
-            except IndexError:
+            if key:
+                n = key
+            else:
                 import warnings
                 warnings.warn("You did not provide a row size! Defaults to 4.")
                 n = 4
@@ -95,16 +96,38 @@ class Encrypt0r:
                 cipher_text += "".join(cipher_matrix[:, jj].tolist())
             return cipher_text
 
-    def decrypt(self, cipher_text):
+        elif self.cipher.lower() == "xor_cipher":
+            def keygen(length: int) -> bytes:
+                from os import urandom
+                return urandom(length)
+
+            if key:
+                if not isinstance(key, bytes):
+                    KEY = key.encode("utf-8")
+                else:
+                    KEY = key
+            else:
+                KEY = keygen(len(plain_text))
+            if not isinstance(plain_text, bytes):
+                plain_text = plain_text.encode("utf-8")
+            if len(plain_text) == 1:
+                return {"Cipher": "".join(chr(i ^ j) for i, j in zip(plain_text, KEY)),
+                        "Key": KEY}
+            else:
+                # Python 3 bytes objects contain integer values in the range 0-255
+                return {"Cipher": bytes([a ^ b for a, b in zip(plain_text, KEY)]),
+                        "Key": KEY}
+
+    def decrypt(self, cipher_text, key=None):
         if self.cipher.lower() == "reverse_cipher":
             plain_text = cipher_text[::-1]
             return plain_text
 
         elif "substitution_cipher" in self.cipher.lower():
             plain_text = ""
-            try:
-                n = int(self.cipher.split(":")[1])
-            except IndexError:
+            if key:
+                n = key
+            else:
                 import warnings
                 warnings.warn("You did not provide a shift value! Defaults to 13.")
                 n = 13
@@ -129,9 +152,9 @@ class Encrypt0r:
 
         elif "columnar_transposition_cipher" in self.cipher.lower():
             plain_text = ""
-            try:
-                n = int(self.cipher.split(":")[1])
-            except IndexError:
+            if key:
+                n = key
+            else:
                 import warnings
                 warnings.warn("You did not provide a row size! Defaults to 4.")
                 n = 4
@@ -142,6 +165,9 @@ class Encrypt0r:
                     plain_text += cipher_text[i]
                 j += 1
             return plain_text.replace("_", " ").strip()
+
+        elif self.cipher.lower() == "xor_cipher":
+            return self.encrypt(cipher_text, key=key)["Cipher"]
 
 
 class Enc0der:
