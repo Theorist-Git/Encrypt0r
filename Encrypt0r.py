@@ -19,14 +19,18 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 __author__ = "Mayank Vats"
 __email__ = "testpass.py@gmail.com"
 __Description__ = "Encrypt0r: A package to manage Encryption"
-__version__ = "0.1a"
+__version__ = "0.2a"
 
 
 class Encrypt0r:
 
     def __init__(self, cipher):
         self.cipher = cipher
-        self.supportedEncrypt0rs = []
+        self.supportedEncrypt0rs = [
+            "reverse_cipher",
+            "substitution_cipher",
+            "columnar_transposition_cipher"
+        ]
 
     def encrypt(self, plain_text):
         if self.cipher.lower() == "reverse_cipher":
@@ -40,7 +44,7 @@ class Encrypt0r:
 
             try:
                 n = int(self.cipher.split(":")[1])
-            except IndexError as e:
+            except IndexError:
                 import warnings
                 warnings.warn("You did not provide a shift value! Defaults to 13.")
                 n = 13
@@ -70,7 +74,7 @@ class Encrypt0r:
             cipher_text = ""
             try:
                 n = int(self.cipher.split(":")[1])
-            except IndexError as e:
+            except IndexError:
                 import warnings
                 warnings.warn("You did not provide a row size! Defaults to 4.")
                 n = 4
@@ -100,7 +104,7 @@ class Encrypt0r:
             plain_text = ""
             try:
                 n = int(self.cipher.split(":")[1])
-            except IndexError as e:
+            except IndexError:
                 import warnings
                 warnings.warn("You did not provide a shift value! Defaults to 13.")
                 n = 13
@@ -127,7 +131,7 @@ class Encrypt0r:
             plain_text = ""
             try:
                 n = int(self.cipher.split(":")[1])
-            except IndexError as e:
+            except IndexError:
                 import warnings
                 warnings.warn("You did not provide a row size! Defaults to 4.")
                 n = 4
@@ -138,3 +142,51 @@ class Encrypt0r:
                     plain_text += cipher_text[i]
                 j += 1
             return plain_text.replace("_", " ").strip()
+
+
+class Enc0der:
+
+    def __init__(self, encoding):
+        self.encoding = encoding
+        self.supported_encoding = [
+            "base64:b16",
+            "base64:b32",
+            "base64:b64",
+            "base64:b85"
+        ]
+
+    def encode(self, plain_text, url_safe: bool = False) -> bytes:
+        if "base64" in self.encoding.lower():
+            algo = self.encoding.split(":")[1] + "encode"
+            plain_text = plain_text.encode("utf-8")
+            import importlib
+            if url_safe:
+                if algo == "b64encode":
+                    from base64 import urlsafe_b64encode
+                    return urlsafe_b64encode(plain_text)
+                else:
+                    raise TypeError("URL_SAFE encoding is only available for base64:b64")
+            else:
+                package = importlib.__import__("base64", fromlist=self.supported_encoding)
+                encoder = getattr(package, algo)
+                return encoder(plain_text)
+        else:
+            raise TypeError(f"No such encoding available\nSee supported encodings:\n{self.supported_encoding}")
+
+    def decode(self, encoded_text, url_safe: bool = False) -> bytes:
+        if "base64" in self.encoding.lower():
+            algo = self.encoding.split(":")[1] + "decode"
+            encoded_text = encoded_text.encode("utf-8")
+            import importlib
+            if url_safe:
+                if algo == "b64decode":
+                    from base64 import urlsafe_b64decode
+                    return urlsafe_b64decode(encoded_text)
+                else:
+                    raise TypeError("URL_SAFE decoding is only available for base64:b64")
+            else:
+                package = importlib.__import__("base64", fromlist=self.supported_encoding)
+                decoder = getattr(package, algo)
+                return decoder(encoded_text)
+        else:
+            raise TypeError(f"No such decoding available\nSee supported de-codings:\n{self.supported_encoding}")
