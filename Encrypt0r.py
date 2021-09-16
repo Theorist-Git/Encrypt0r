@@ -19,7 +19,7 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 __author__ = "Mayank Vats"
 __email__ = "testpass.py@gmail.com"
 __Description__ = "Encrypt0r: A package to manage Encryption"
-__version__ = "0.2a"
+__version__ = "0.3a"
 
 
 class Encrypt0r:
@@ -118,6 +118,47 @@ class Encrypt0r:
                 return {"Cipher": bytes([a ^ b for a, b in zip(plain_text, KEY)]),
                         "Key": KEY}
 
+        elif self.cipher.lower() == "vigenere_cipher":
+            cipher_text = ""
+            from string import ascii_uppercase as ascii_up
+            from secrets import SystemRandom
+            header = [j for j in ascii_up]
+            cipher_table = [ascii_up[i:] + ascii_up[:i] for i in range(len(ascii_up))]
+            VIGENERE_TABLEAU = dict(zip(header, cipher_table))
+            DEFAULT_KEY_LENGTH = 6
+
+            if key:
+                if len(key) <= len(plain_text):
+                    KEY = key.upper()
+                else:
+                    KEY = key[:len(plain_text)].upper()
+                    import warnings
+                    warnings.warn(f"You provided a key of length > len(plain_text).\nKey has been truncated: {KEY}")
+            else:
+                KEY = ''.join(SystemRandom().choice(ascii_up) for _ in range(DEFAULT_KEY_LENGTH))
+            it = 0
+            while len(plain_text) != len(KEY):
+                if it == 0 or len(KEY) - 1 / it != 1.0:
+                    KEY += KEY[it]
+                    it += 1
+                else:
+                    it = 0
+                    KEY += KEY[it]
+                    it += 1
+            CIPHER_KEY_TABLEAU = list(zip(plain_text, KEY))
+            index = 0
+            for k in plain_text:
+                if k.isalpha():
+                    if k.isupper():
+                        cipher_text += VIGENERE_TABLEAU[CIPHER_KEY_TABLEAU[index][1]][ascii_up.index(k.upper())]
+                        index += 1
+                    else:
+                        cipher_text += VIGENERE_TABLEAU[CIPHER_KEY_TABLEAU[index][1]][ascii_up.index(k.upper())].lower()
+                        index += 1
+                else:
+                    cipher_text += k
+            return {"Cipher": cipher_text, "Key": KEY}
+
     def decrypt(self, cipher_text, key=None):
         if self.cipher.lower() == "reverse_cipher":
             plain_text = cipher_text[::-1]
@@ -168,6 +209,40 @@ class Encrypt0r:
 
         elif self.cipher.lower() == "xor_cipher":
             return self.encrypt(cipher_text, key=key)["Cipher"]
+
+        elif self.cipher.lower() == "vigenere_cipher":
+            plain_text = ""
+            from string import ascii_uppercase as ascii_up
+            from secrets import SystemRandom
+            header = [j for j in ascii_up]
+            cipher_table = [ascii_up[i:] + ascii_up[:i] for i in range(len(ascii_up))]
+            VIGENERE_TABLEAU = dict(zip(header, cipher_table))
+            if key:
+                KEY = key
+            else:
+                raise TypeError("Key cannot be 'None' for Vignere's Cipher Decryption")
+            it = 0
+            while len(cipher_text) != len(KEY):
+                if it == 0 or len(KEY) - 1 / it != 1.0:
+                    KEY += KEY[it]
+                    it += 1
+                else:
+                    it = 0
+                    KEY += KEY[it]
+                    it += 1
+            CIPHER_KEY_TABLEAU = list(zip(cipher_text, KEY))
+            index = 0
+            for k in cipher_text:
+                if k.isalpha():
+                    if k.isupper():
+                        plain_text += ascii_up[VIGENERE_TABLEAU[CIPHER_KEY_TABLEAU[index][1]].index(k.upper())]
+                        index += 1
+                    else:
+                        plain_text += ascii_up[VIGENERE_TABLEAU[CIPHER_KEY_TABLEAU[index][1]].index(k.upper())].lower()
+                        index += 1
+                else:
+                    plain_text += k
+            return plain_text
 
 
 class Enc0der:
