@@ -1,5 +1,5 @@
 """
-Copyright (C) 2021 Mayank Vats
+Copyright (C) 2021-2022 Mayank Vats
 See license.txt
 
 This program is free software: you can redistribute it and/or modify
@@ -15,11 +15,6 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License v3
 along with this program.  If not, see <https://www.gnu.org/licenses/>.
 """
-
-__author__ = "Mayank Vats"
-__email__ = "testpass.py@gmail.com"
-__Description__ = "Encrypt0r: A package to manage Encryption"
-__version__ = "0.3a"
 
 
 class Encrypt0r:

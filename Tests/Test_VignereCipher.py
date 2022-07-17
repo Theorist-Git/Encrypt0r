@@ -1,8 +1,3 @@
-"""
-Copyright (C) 2021 Mayank Vats
-See license.txt
-"""
-
 from Encrypt0r import Encrypt0r
 
 # If you do not provide a key for encryption,
