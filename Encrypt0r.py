@@ -38,10 +38,12 @@ class Encrypt0r:
             cipher_text = plain_text[::-1]
             return cipher_text
         elif "substitution_cipher" in self.cipher.lower():
-            #  ASCII Capital characters (A-Z) -> 65 - 90
-            #  ASCII lowercase characters (a-z) -> 97 - 122
-            # General substitution cipher, caesar's (shift value = 3) and ROT13(shift value = 13)
-            # ciphers are special cases of this.
+            """
+            ASCII Capital characters (A-Z) -> 65 - 90
+            ASCII lowercase characters (a-z) -> 97 - 122
+            General substitution cipher, caesar's cipher(shift value = 3) and ROT13(shift value = 13)
+            ciphers are special cases of this.
+            """
 
             if key:
                 n = key
@@ -52,13 +54,24 @@ class Encrypt0r:
             cipher_text = ""
             if 0 <= n <= 26:
                 for i in plain_text:
+                    # For EG: ord('A') = 65, its new position will be 65 + n[specified shift]
                     new_pos = ord(i) + n
+
+                    # Generating cipher for capital letters
                     if i.isupper():
-                        if new_pos <= 90:
+                        if new_pos <= 90:  # if new_pos <= 90, chr(new_pos) gives its corresponding cipher alphabet.
                             cipher_text += chr(new_pos)
                         else:
+                            """
+                            Say if new_pos is 91 i.e A is to be encoded with a shift value of 26,
+                            chr(91) corresponds to '[', but we want a character ∈ [65-90].
+                            In this case an overflow is generated which is added to 65 and 1 is subtracted from it.
+                            i.e new_pos = 91 is equivalent to going to 90 and then looping back to 65.
+                            """
                             overflow = new_pos - 90
                             cipher_text += chr(65 + overflow - 1)
+
+                    # Generating cipher for lowercase letters
                     elif i.islower():
                         if new_pos <= 122:
                             cipher_text += chr(new_pos)
@@ -178,6 +191,11 @@ class Encrypt0r:
                     if new_pos >= 65:
                         plain_text += chr(new_pos)
                     else:
+                        """
+                        Say the new_pos is 64 but we want a character ∈ [65-90].
+                        In this case an underflow is generated which is subtracted from 90
+                        i.e new_pos = 64 is equivalent to going to 65 and then looping back to 90.
+                        """
                         underflow = 65 - new_pos
                         plain_text += chr(90 - underflow + 1)
                 elif i.islower():

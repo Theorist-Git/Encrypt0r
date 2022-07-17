@@ -7,8 +7,7 @@ from Encrypt0r import Encrypt0r
 
 # If you do not provide a key for encryption,
 # A random 6-Letter key will be generated, 6-letters
-# Imply 6^26 (1.7058173 x 10^20) possible keys. Making it highly
-# resistant to Brute-Force attacks.
+# Imply 26^6 (308915776) possible keys.
 
 encrypt0r = Encrypt0r("Vigenere_Cipher")
 print("Encrypted: ", encrypt0r.encrypt("testpass.py@gmail.com"))
